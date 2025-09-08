@@ -1,536 +1,139 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="utf-8" />
+  <title>Frame: jaga.id (monitoring)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MCSP 2025 — Replica (Tulung Bawang Barat)</title>
-
-  <!-- Tailwind via CDN for fast prototyping -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
   <style>
-    /* Custom theme to match screenshot */
-    :root {
-      --brand: #c8232c; /* red header */
-      --muted: #9ca3af;
-      --card: #ffffff;
-      --panel: #f8fafb;
-    }
-    body {
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    /* Top red nav */
-    .top-nav {
-      background: linear-gradient(#c8232c, #b71e26);
-      border-radius: 10px;
-    }
-    .nav-tab {
-      color: #fff;
-      padding: 18px 30px;
-      font-weight: 700;
-      position: relative;
-      display: inline-block;
-      border-right: 1px solid rgba(255, 255, 255, 0.06);
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-    .nav-tab:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateY(-2px);
-    }
-    .nav-tab.active {
-      background: transparent;
-      box-shadow: inset 0 -6px 0 rgba(255, 255, 255, 0.06);
-    }
-    .nav-badge {
-      position: absolute;
-      top: -8px;
-      right: 14px;
-      background: #ff6b6b;
-      color: white;
-      font-weight: 700;
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 10px;
-      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
-    }
-    /* Sidebar left small circles */
-    .side-index {
-      width: 64px;
-    }
-    .side-item {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 64px;
-      width: 64px;
-      border-right: 1px solid #eee;
-    }
-    .side-circle {
-      border-radius: 999px;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      background: #efefef;
-      color: #333;
-      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06);
-      position: relative;
-      cursor: pointer;
-      transition: transform 0.2s ease, background 0.3s ease;
-    }
-    .side-circle:hover {
-      transform: scale(1.1);
-      background: #e0e0e0;
-    }
-    .side-circle.badged::after {
-      content: attr(data-b);
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      background: #e44;
-      color: #fff;
-      font-size: 11px;
-      padding: 4px 6px;
-      border-radius: 8px;
-    }
-    /* Tabs inside Sasaran */
-    .sasaran-tabs {
-      display: flex;
-      gap: 12px;
-      margin-top: 8px;
-    }
-    .sasaran-tab {
-      padding: 14px 26px;
-      border-radius: 8px;
-      background: #d3d3d3;
-      color: #333;
-      font-weight: 700;
-      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.06);
-      position: relative;
-      transition: transform 0.2s ease, background 0.3s ease;
-    }
-    .sasaran-tab:hover {
-      transform: translateY(-2px);
-    }
-    .sasaran-tab.active {
-      background: var(--brand);
-      color: white;
-      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.06);
-    }
-    .sasaran-tab .small-badge {
-      position: absolute;
-      top: -12px;
-      right: -8px;
-      background: #ff6b6b;
-      color: white;
-      font-size: 12px;
-      padding: 6px 8px;
-      border-radius: 8px;
-      font-weight: 700;
-    }
-    /* Card like panels */
-    .panel-card {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
-      border: 1px solid #e6e6e6;
-      padding: 20px;
-    }
-    .accordion {
-      background: #4b4b4b;
-      color: white;
-      padding: 18px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-      transition: transform 0.2s ease;
-    }
-    .accordion:hover {
-      transform: translateY(-2px);
-    }
-    .progress-pill {
-      background: #2f9d4a;
-      color: white;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-weight: 700;
-      margin-right: 12px;
-    }
-    .divider {
-      height: 3px;
-      background: #000;
-      margin: 14px 0 20px;
-      opacity: 0.9;
-    }
-    /* Penilaian red header */
-    .penilaian-header {
-      background: #e94a45;
-      color: white;
-      padding: 14px;
-      border-radius: 6px;
-      font-weight: 700;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
-    }
-    /* Document blocks */
-    .doc-box {
-      background: #dfe7df;
-      padding: 16px;
-      border-radius: 8px;
-      min-height: 70px;
-    }
-    /* Verification button */
-    .btn-verify {
-      background: var(--brand);
-      color: white;
-      padding: 12px 26px;
-      border-radius: 8px;
-      font-weight: 700;
-      transition: background 0.3s ease, transform 0.2s ease;
-    }
-    .btn-verify:hover {
-      background: #b71e26;
-      transform: translateY(-2px);
-    }
-    /* Small helpers */
-    .badge-gray {
-      background: #d2d6db;
-      padding: 8px 12px;
-      border-radius: 999px;
-      color: #333;
-      font-weight: 700;
-      display: inline-block;
-    }
-    .shadow-soft {
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-    }
-    /* Toast animation */
-    .toast {
-      animation: fadeInOut 3s ease forwards;
-    }
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translateY(20px); }
-      10% { opacity: 1; transform: translateY(0); }
-      90% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(20px); }
-    }
-    /* Responsive tweaks */
-    @media (max-width: 900px) {
-      .nav-tab {
-        padding: 12px 14px;
-        font-size: 13px;
-      }
-      .side-index {
-        display: none;
-      }
-      .sasaran-tab {
-        padding: 10px 16px;
-        font-size: 14px;
-      }
-      .panel-card {
-        padding: 12px;
-      }
-    }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 0; }
+    header { background:#0b74da; color:#fff; padding:12px 16px; }
+    main { padding: 12px; }
+    #frameWrap { width: 100%; height: calc(100vh - 120px); border: 1px solid #ddd; box-sizing: border-box; overflow: hidden; }
+    iframe { width: 100%; height: 100%; border: 0; display: block; }
+    #status { margin-top:10px; font-weight:600; }
+    #kontenProxy { width:100%; height:100%; overflow:auto; box-sizing:border-box; padding:12px; background:#fff; }
+    .controls { margin-top:8px; }
+    button { padding:8px 10px; margin-right:8px; cursor:pointer; }
+    small.note { color:#555; display:block; margin-top:8px; }
   </style>
 </head>
-<body class="bg-gray-50 text-slate-800">
+<body>
+  <header>
+    <h1 style="font-size:18px; margin:0">Embedded: jaga.id — Monitoring</h1>
+  </header>
 
-  <!-- Page wrap -->
-  <div class="max-w-[1400px] mx-auto p-4 sm:p-6">
-
-    <!-- Header title with search bar -->
-    <header class="mb-4 flex flex-col sm:flex-row justify-between items-center">
-      <h1 class="text-2xl sm:text-3xl font-extrabold">MCSP 2025</h1>
-      <div class="mt-2 sm:mt-0">
-        <input type="text" id="searchInput" placeholder="Cari dokumen atau indikator..." class="border rounded-md p-2 text-sm w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-red-500">
-      </div>
-    </header>
-
-    <!-- Top navigation tabs (red) -->
-    <div class="top-nav px-4 py-2 rounded-xl mb-4">
-      <div class="flex items-center gap-2 overflow-x-auto">
-        <div class="nav-tab active">DASHBOARD <span class="block mt-2 border-b-4 border-white/80 w-16 mx-auto"></span></div>
-        <div class="nav-tab" data-key="perencanaan">PERENCANAAN <span class="nav-badge">102</span></div>
-        <div class="nav-tab" data-key="anggaran">ANGGARAN <span class="nav-badge">60</span></div>
-        <div class="nav-tab" data-key="pbj">PBJ <span class="nav-badge">97</span></div>
-        <div class="nav-tab" data-key="yanblik">YANBLIK <span class="nav-badge">82</span></div>
-        <div class="nav-tab" data-key="masn">M-ASN <span class="nav-badge">31</span></div>
-        <div class="nav-tab" data-key="bmd">BMD <span class="nav-badge">52</span></div>
-        <div class="nav-tab" data-key="opd">OPD <span class="nav-badge">13</span></div>
-        <div class="nav-tab" data-key="apip">APIP <span class="nav-badge">67</span></div>
-      </div>
+  <main>
+    <div class="controls">
+      <!-- Tombol manual jika mau paksa iframe atau proxy -->
+      <button id="btnLoadIframe">Tampilkan via Iframe</button>
+      <button id="btnLoadProxy">Tampilkan via Proxy</button>
+      <span id="status">Status: siap.</span>
     </div>
 
-    <!-- Instansi dropdown -->
-    <div class="panel-card mb-6">
-      <label class="text-sm text-gray-500">Instansi</label>
-      <div class="mt-2 border rounded-md p-4 bg-white text-gray-600">Pemerintah Kabupaten Tulang Bawang Barat <span class="float-right text-xl text-gray-400">▾</span></div>
+    <div id="frameWrap" aria-live="polite">
+      <!-- iframe atau konten proxy akan disisipkan di sini -->
     </div>
 
-    <!-- Main layout: sidebar index + content -->
-    <div class="flex gap-4">
-      <!-- Left index (vertical circle buttons) -->
-      <div class="side-index bg-white rounded-xl overflow-hidden shadow-soft">
-        <div class="side-item border-b">
-          <div class="side-circle bg-red-600 text-white" data-id="1.1">1.1</div>
-        </div>
-        <div class="side-item border-b">
-          <div class="side-circle side-gray" data-b="2" data-id="1.2">1.2</div>
-        </div>
-        <div class="side-item border-b">
-          <div class="side-circle bg-red-600 text-white" data-b="9" data-id="1.3">1.3</div>
-        </div>
-        <div class="side-item border-b">
-          <div class="side-circle" data-id="1.4">1.4</div>
-        </div>
-      </div>
-
-      <!-- Right content -->
-      <div class="flex-1">
-        <!-- Sasaran heading -->
-        <h2 class="text-xl sm:text-2xl font-semibold mb-4">Sasaran</h2>
-
-        <!-- Tabs inside Sasaran -->
-        <div class="sasaran-tabs mb-6">
-          <div class="sasaran-tab active">
-            1. Perencanaan Pembangunan Daerah
-            <span class="small-badge">11</span>
-          </div>
-          <div class="sasaran-tab">
-            2. Pokok Pikiran
-            <span class="small-badge">15</span>
-          </div>
-          <div class="sasaran-tab">
-            3. Penyaluran Hibah, Bantuan Sosial, dan Bantuan Keuangan
-            <span class="small-badge">76</span>
-          </div>
-        </div>
-
-        <!-- Content card -->
-        <div class="panel-card">
-          <!-- Section title -->
-          <div class="mb-4">
-            <h3 class="text-xl sm:text-2xl font-semibold">Aspek Transparansi <span class="text-base sm:text-lg text-gray-500">[ 33.33 % ]</span></h3>
-            <div class="divider"></div>
-          </div>
-
-          <!-- Accordion (dark) - collapsed by default -->
-          <div class="accordion mb-6" id="acc-1" style="cursor:pointer;">
-            <div class="flex items-center">
-              <span class="progress-pill">0%</span>
-              <div class="text-left">
-                <div class="text-base sm:text-lg font-semibold">Transparansi perencanaan pembangunan daerah [100%]</div>
-                <div class="text-sm text-gray-300">Ringkasan: Indikator dan dokumen terkait.</div>
-              </div>
-            </div>
-            <div style="opacity:0.85;">▾</div>
-          </div>
-
-          <!-- Content inside expanded panel -->
-          <div class="mb-6">
-            <div class="penilaian-header mb-4">Penilaian 1.1.3.2.2 (15 poin)</div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div class="doc-box">
-                <strong>Kelengkapan Dokumen:</strong>
-                <p class="mt-2 text-sm">- Form Konsistensi Renstra dengan Renja pada masing-masing Perangkat Daerah untuk APBD Tahun 2026</p>
-              </div>
-              <div class="doc-box">
-                <strong>Penilaian:</strong>
-                <p class="mt-2 text-sm">Form Konsistensi Renstra dengan Renja pada masing-masing Perangkat Daerah untuk APBD Tahun 2026</p>
-              </div>
-            </div>
-
-            <!-- Document upload list (left) + verification card (right) -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-              <div class="col-span-2 bg-white p-6 rounded-lg shadow-soft">
-                <h4 class="font-semibold mb-2">Dokumen yang Perlu Diunggah</h4>
-                <ol class="list-decimal pl-6 text-sm leading-7 text-gray-700">
-                  <li>Form Konsistensi Renstra dengan Renja ditandatangani pejabat berwenang</li>
-                  <li>Dokumen pendukung lain yang relevan</li>
-                </ol>
-                <div class="mt-6">
-                  <div class="panel-card">
-                    <h5 class="text-lg font-semibold mb-2">Terverifikasi</h5>
-                    <table class="min-w-full text-sm">
-                      <thead class="text-left text-gray-500">
-                        <tr><th class="pb-2">Tanggal</th><th class="pb-2">Nilai</th><th class="pb-2">Verifier</th><th class="pb-2">Info</th></tr>
-                      </thead>
-                      <tbody class="text-gray-700" id="verifyTable">
-                        <tr><td class="py-2">-</td><td class="py-2">-</td><td class="py-2">-</td><td class="py-2">-</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-              <div class="bg-white p-6 rounded-lg shadow-soft">
-                <div class="text-center mb-4">
-                  <button class="btn-verify w-full" id="btnVerify">Verifikasi</button>
-                </div>
-                <div class="text-sm text-gray-600">
-                  <div class="font-semibold mb-2">Status</div>
-                  <div id="statusBox" class="p-3 rounded-md bg-gray-100">Belum Terverifikasi</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Extra: big screenshot-style panel -->
-    <div class="mt-8 panel-card">
-      <div class="flex items-center justify-between mb-3">
-        <div class="font-semibold">Detail Lanjutan</div>
-        <div class="text-sm text-gray-500">QA / Notes</div>
-      </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div>
-          <p class="text-sm text-gray-700">Contoh konten panjang: form, penjelasan verifikasi, dan checklist dokumen.</p>
-        </div>
-        <div>
-          <p class="text-sm text-gray-700">Area untuk komentar QA & catatan verifikator.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Floating small left black vertical menu -->
-  <div style="position:fixed; left:8px; top:80px; width:56px;">
-    <div class="bg-black text-white p-3 rounded-lg mb-2 text-center shadow-lg cursor-pointer hover:bg-gray-800">⚙️</div>
-    <div class="bg-black text-white p-3 rounded-lg mb-2 text-center shadow-lg cursor-pointer hover:bg-gray-800">📄</div>
-    <div class="bg-black text-white p-3 rounded-lg mb-2 text-center shadow-lg cursor-pointer hover:bg-gray-800">📊</div>
-    <div class="bg-black text-white p-3 rounded-lg mb-2 text-center shadow-lg cursor-pointer hover:bg-gray-800">📁</div>
-  </div>
-
-  <!-- Drawer (hidden) for item details -->
-  <div id="drawer" class="fixed right-0 top-0 h-full w-[420px] bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50">
-    <div class="p-6">
-      <div class="flex justify-between items-center mb-4">
-        <div class="text-lg font-semibold">Detail Dokumen</div>
-        <button id="closeDrawer" class="text-gray-500 hover:text-gray-700">✕</button>
-      </div>
-      <div id="drawerContent">
-        <p class="text-sm text-gray-700">Detail akan muncul di sini saat item dipilih.</p>
-      </div>
-    </div>
-  </div>
+    <small class="note">
+      Catatan: beberapa situs melarang tampil di iframe (header X-Frame-Options atau CSP). 
+      Jika iframe kosong, sistem akan otomatis mencoba fallback ke proxy. Hasil proxy menampilkan HTML sumber — gaya/JS eksternal mungkin tidak bekerja sempurna.
+    </small>
+  </main>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // TOP NAV tab active styling
-      document.querySelectorAll('.nav-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          pushToast(`Navigasi ke: ${tab.textContent.trim()}`);
-        });
-      });
+    // URL target yang diminta
+    const targetUrl = "https://jaga.id/korwil/monitoring?year=2025&instansiId=506&templateId=1&version=my&betaVersion=2&vnk=5017a892";
 
-      // SASARAN tabs click behavior
-      document.querySelectorAll('.sasaran-tab').forEach((t, idx) => {
-        t.addEventListener('click', () => {
-          document.querySelectorAll('.sasaran-tab').forEach(x => x.classList.remove('active'));
-          t.classList.add('active');
-          if (idx === 0) {
-            // Keep current view
-          } else {
-            pushToast(`Memuat tab: ${t.textContent.trim()}`);
-          }
-        });
-      });
+    const frameWrap = document.getElementById("frameWrap");
+    const statusEl = document.getElementById("status");
+    const btnLoadIframe = document.getElementById("btnLoadIframe");
+    const btnLoadProxy = document.getElementById("btnLoadProxy");
 
-      // SIDE CIRCLE click behavior
-      document.querySelectorAll('.side-circle').forEach(circle => {
-        circle.addEventListener('click', () => {
-          const id = circle.getAttribute('data-id');
-          openDrawerWith({
-            title: `Detail Indikator ${id}`,
-            content: `<p><strong>Indikator ${id}</strong>: Informasi terkait indikator ${id}.</p>
-                      <p class="mt-3">Status: <span class="badge-gray">Belum Lengkap</span></p>
-                      <p class="mt-3">Dokumen yang diperlukan: Form Konsistensi ${id}.</p>`
-          });
-        });
-      });
+    // fungsi tulis status
+    function setStatus(text) {
+      statusEl.textContent = "Status: " + text;
+    }
 
-      // ACCORDION: toggle panel
-      document.getElementById('acc-1').addEventListener('click', function() {
-        openDrawerWith({
-          title: 'Transparansi perencanaan pembangunan daerah [100%]',
-          content: '<p><strong>Rincian:</strong> Indikator 1.1.x - data & dokumen. Persentase terhitung: 0% (sumber: dokumen belum diunggah).</p>' +
-                   '<p class="mt-3"><strong>Catatan:</strong> Pastikan Form Konsistensi Renstra diunggah dan ditandatangani.</p>'
-        });
-      });
+    // muat via iframe
+    function loadIframe() {
+      frameWrap.innerHTML = ""; // bersihkan
+      setStatus("Mencoba memuat via iframe...");
+      const iframe = document.createElement("iframe");
+      iframe.src = targetUrl;
+      // jangan gunakan sandbox kecuali memang perlu, karena bisa mematikan fungsi halaman
+      let loaded = false;
 
-      // VERIFY button toggles status
-      const btnVerify = document.getElementById('btnVerify');
-      const statusBox = document.getElementById('statusBox');
-      const verifyTable = document.getElementById('verifyTable');
-      let verified = false;
-      btnVerify.addEventListener('click', () => {
-        verified = !verified;
-        if (verified) {
-          statusBox.textContent = 'Terverifikasi';
-          statusBox.classList.remove('bg-gray-100');
-          statusBox.classList.add('bg-green-100', 'text-green-800');
-          // Update table with dynamic data
-          const date = new Date().toLocaleDateString('id-ID');
-          verifyTable.innerHTML = `<tr><td class="py-2">${date}</td><td class="py-2">15</td><td class="py-2">Admin</td><td class="py-2">OK</td></tr>`;
-          pushToast('Item berhasil diverifikasi');
-        } else {
-          statusBox.textContent = 'Belum Terverifikasi';
-          statusBox.classList.remove('bg-green-100', 'text-green-800');
-          statusBox.classList.add('bg-gray-100');
-          verifyTable.innerHTML = `<tr><td class="py-2">-</td><td class="py-2">-</td><td class="py-2">-</td><td class="py-2">-</td></tr>`;
-          pushToast('Verifikasi dibatalkan');
-        }
-      });
-
-      // SEARCH input simulation
-      const searchInput = document.getElementById('searchInput');
-      searchInput.addEventListener('input', () => {
-        const query = searchInput.value.trim();
-        if (query) {
-          pushToast(`Mencari: ${query}`);
-        }
-      });
-
-      // Drawer open/close
-      const drawer = document.getElementById('drawer');
-      const closeDrawer = document.getElementById('closeDrawer');
-      function openDrawerWith(obj) {
-        document.getElementById('drawerContent').innerHTML = `<h4 class="font-semibold mb-2">${obj.title}</h4>${obj.content}`;
-        drawer.classList.remove('translate-x-full');
-        drawer.style.transform = 'translateX(0)';
-      }
-      closeDrawer.addEventListener('click', () => {
-        drawer.style.transform = 'translateX(100%)';
-      });
-
-      // Toast container
-      const TOAST_WRAP = document.createElement('div');
-      TOAST_WRAP.style.position = 'fixed';
-      TOAST_WRAP.style.left = '50%';
-      TOAST_WRAP.style.transform = 'translateX(-50%)';
-      TOAST_WRAP.style.bottom = '24px';
-      TOAST_WRAP.style.zIndex = 60;
-      document.body.appendChild(TOAST_WRAP);
-      window.pushToast = function(msg) {
-        const el = document.createElement('div');
-        el.className = 'inline-block bg-white px-4 py-2 rounded-lg shadow border toast';
-        el.style.marginTop = '8px';
-        el.style.fontWeight = '600';
-        el.textContent = msg;
-        TOAST_WRAP.appendChild(el);
-        setTimeout(() => el.remove(), 3000);
+      iframe.onload = () => {
+        loaded = true;
+        setStatus("✅ Berhasil dimuat dengan iframe.");
       };
 
-      // Initial toast
-      pushToast('Data dimuat: Pemerintah Kabupaten Tulang Bawang Barat');
-    });
+      // onerror seringkali tidak ter-trigger ketika diblokir oleh X-Frame-Options,
+      // jadi kita pakai timeout tambahan di bawah
+      iframe.onerror = () => {
+        setStatus("⚠️ Error saat mencoba memuat iframe — mencoba fallback proxy...");
+        loadProxy();
+      };
+
+      frameWrap.appendChild(iframe);
+
+      // fallback check setelah 2.5 detik: kalau contentWindow null atau kosong, paksa proxy
+      setTimeout(() => {
+        try {
+          // beberapa browser memperbolehkan akses contentWindow, tetapi jika diblokir, frame mungkin kosong
+          if (!loaded) {
+            // cek apakah dokumen di dalam iframe tersedia (cross-origin biasanya blocking, tapi jika diblokir frame akan kosong)
+            const cw = iframe.contentWindow;
+            if (!cw || iframe.clientHeight === 0 || iframe.offsetHeight === 0) {
+              setStatus("⚠️ Iframe kemungkinan diblokir oleh server (X-Frame-Options/CSP). Menggunakan proxy...");
+              loadProxy();
+            } else {
+              // kalau belum loaded tapi contentWindow ada, beri waktu lebih
+              setStatus("⏳ Iframe sedang dimuat...");
+            }
+          }
+        } catch (e) {
+          // akses ke contentWindow dari cross-origin akan melempar exception, tapi itu normal — jika load belum terjadi, tetap tunggu.
+          if (!loaded) {
+            setStatus("⚠️ Iframe cross-origin; menunggu onload atau fallback...");
+            // beri kesempatan onload; jika tidak onload dalam beberapa detik lagi, fallback
+            setTimeout(() => {
+              if (!loaded) loadProxy();
+            }, 2000);
+          }
+        }
+      }, 2500);
+    }
+
+    // muat via proxy (AllOrigins). AllOrigins raw endpoint: https://api.allorigins.win/raw?url=<encoded>
+    async function loadProxy() {
+      frameWrap.innerHTML = ""; // bersihkan
+      setStatus("⏳ Mengambil konten via proxy...");
+      const konten = document.createElement("div");
+      konten.id = "kontenProxy";
+      konten.textContent = "Mengambil konten...";
+      frameWrap.appendChild(konten);
+
+      try {
+        const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(targetUrl);
+        const res = await fetch(proxyUrl);
+        if (!res.ok) throw new Error("Response not OK: " + res.status);
+        const html = await res.text();
+        // masukkan html ke dalam kontainer
+        konten.innerHTML = html;
+        setStatus("✅ Konten dimuat via proxy (AllOrigins).");
+      } catch (err) {
+        konten.innerHTML = "<p style='color:crimson'>Gagal mengambil via proxy: " + (err.message || err) + "</p>";
+        setStatus("❌ Gagal memuat via proxy.");
+      }
+    }
+
+    // event tombol
+    btnLoadIframe.addEventListener("click", loadIframe);
+    btnLoadProxy.addEventListener("click", loadProxy);
+
+    // load otomatis via iframe saat halaman dibuka
+    loadIframe();
   </script>
 </body>
 </html>
